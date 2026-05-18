@@ -1,9 +1,11 @@
+// 1. Initialize EmailJS with your Public Key
 (function() {
     emailjs.init("RPl28hStE0MKG84pv");
 })();
 
 let grandTotal = 0;
 
+// Function to add items to the list
 function calculateTotal() {
     let food = document.getElementById("food");
     let foodName = food.options[food.selectedIndex].text;
@@ -42,12 +44,14 @@ function calculateTotal() {
     document.getElementById("quantity").value = 1;
 }
 
+// Function to clear the calculator
 function clearOrders() {
     document.getElementById("orderList").innerHTML = "<p>No orders yet.</p>";
     grandTotal = 0;
     document.getElementById("result").innerHTML = "Total: ₱0";
 }
 
+// Function to send the email via EmailJS
 function placeOrder() {
     const email = document.getElementById("customerEmail").value;
     const resultDisplay = document.getElementById("result").innerText;
@@ -64,6 +68,7 @@ function placeOrder() {
     let orderSummary = "";
     const items = document.querySelectorAll(".order-item");
     items.forEach(item => {
+        // Cleaning up the text for the email body
         orderSummary += item.innerText.replace(/\n/g, " ") + " | ";
     });
 
@@ -73,6 +78,8 @@ function placeOrder() {
         total_price: resultDisplay
     };
 
+    // REPLACE THESE TWO IDS WITH THE ONES FROM YOUR DASHBOARD
+    // 'service_xxxx' and 'template_xxxx'
     emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams)
         .then(function(response) {
            alert('Order Placed Successfully! Check your email.');
@@ -84,6 +91,7 @@ function placeOrder() {
         });
 }
 
+// Function for the Contact Form
 function validateForm() {
     let name = document.getElementById("name").value;
     let email = document.getElementById("email").value;
