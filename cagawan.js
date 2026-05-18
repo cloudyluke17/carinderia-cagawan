@@ -1,3 +1,7 @@
+(function() {
+    emailjs.init("RPl28hStE0MKG84pv");
+})();
+
 let grandTotal = 0;
 
 function calculateTotal() {
@@ -75,7 +79,7 @@ function placeOrder() {
            clearOrders();
            document.getElementById("customerEmail").value = "";
         }, function(error) {
-           alert('Failed to send order. Please check your EmailJS IDs.');
+           alert('Failed to send order. Please check your Service and Template IDs.');
            console.log('FAILED...', error);
         });
 }
