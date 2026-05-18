@@ -1,5 +1,4 @@
 let grandTotal = 0;
-let orders = [];
 
 function calculateTotal() {
     let food = document.getElementById("food");
@@ -14,47 +13,83 @@ function calculateTotal() {
 
     let total = foodPrice * quantity;
     grandTotal += total;
-    orders.push(`${foodName} x ${quantity} = ₱${total}`);
 
-    displayOrders();
-}
-
-function displayOrders() {
     let orderList = document.getElementById("orderList");
-    orderList.innerHTML = "";
-    orders.forEach(order => {
-        orderList.innerHTML += `<div class="order-item">${order}</div>`;
-    });
+    if (orderList.innerHTML.includes("No orders yet")) {
+        orderList.innerHTML = "";
+    }
+
+    let orderItem = document.createElement("div");
+    orderItem.classList.add("order-item");
+    orderItem.innerHTML = `
+        <div>
+            <strong>${foodName}</strong>
+            <br>
+            Quantity: ${quantity}
+        </div>
+        <div>
+            ₱${total}
+        </div>
+        <hr>
+    `;
+
+    orderList.appendChild(orderItem);
     document.getElementById("result").innerHTML = "Total: ₱" + grandTotal;
+    document.getElementById("quantity").value = 1;
 }
 
 function clearOrders() {
-    grandTotal = 0;
-    orders = [];
     document.getElementById("orderList").innerHTML = "<p>No orders yet.</p>";
+    grandTotal = 0;
     document.getElementById("result").innerHTML = "Total: ₱0";
 }
 
 function placeOrder() {
-    let email = document.getElementById("customerEmail").value;
-    if (email === "" || !email.includes("@")) {
-        alert("Please enter a valid email.");
+    const email = document.getElementById("customerEmail").value;
+    const resultDisplay = document.getElementById("result").innerText;
+    
+    if (grandTotal === 0) {
+        alert("Please add items to your order first!");
         return;
     }
-    if (orders.length === 0) {
-        alert("Add items first!");
+    if (!email.includes("@")) {
+        alert("Please enter a valid email address.");
         return;
     }
-    alert("Order Placed! (Configure EmailJS IDs in JS to send)");
+
+    let orderSummary = "";
+    const items = document.querySelectorAll(".order-item");
+    items.forEach(item => {
+        orderSummary += item.innerText.replace(/\n/g, " ") + " | ";
+    });
+
+    const templateParams = {
+        customer_email: email, 
+        order_details: orderSummary,
+        total_price: resultDisplay
+    };
+
+    emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams)
+        .then(function(response) {
+           alert('Order Placed Successfully! Check your email.');
+           clearOrders();
+           document.getElementById("customerEmail").value = "";
+        }, function(error) {
+           alert('Failed to send order. Please check your EmailJS IDs.');
+           console.log('FAILED...', error);
+        });
 }
 
 function validateForm() {
     let name = document.getElementById("name").value;
     let email = document.getElementById("email").value;
-    if (name === "" || email === "") {
-        document.getElementById("formMessage").innerHTML = "Please fill all fields.";
+    let message = document.getElementById("message").value;
+
+    if (name === "" || email === "" || message === "") {
+        document.getElementById("formMessage").innerHTML = "Please fill out all fields.";
         return false;
     }
-    document.getElementById("formMessage").innerHTML = "Submitted successfully!";
+
+    document.getElementById("formMessage").innerHTML = "Form submitted successfully!";
     return false;
 }
